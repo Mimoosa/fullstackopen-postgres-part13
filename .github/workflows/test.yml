@@ -57,7 +57,3 @@ jobs:
       - name: Print application logs on failure
         if: failure()
         run: cat app.log
-
-      - name: Stop application
-        if: always()
-        run: pkill -f "backend/index.js" || true
