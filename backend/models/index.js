@@ -12,4 +12,5 @@ const syncModels = async () => {
 module.exports = {
   Blog,
   User,
+  syncModels,
 };
