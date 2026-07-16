@@ -3,14 +3,19 @@ const { DATABASE_URL, TEST_DATABASE_URL } = require("./config");
 
 const useTestDb = process.env.TESTING === "true";
 
-const sequelize = new Sequelize(useTestDb ? TEST_DATABASE_URL : DATABASE_URL, {
-  dialectOptions: {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false,
-    },
-  },
-});
+const sequelize = new Sequelize(
+  useTestDb ? TEST_DATABASE_URL : DATABASE_URL,
+  useTestDb
+    ? {}
+    : {
+        dialectOptions: {
+          ssl: {
+            require: true,
+            rejectUnauthorized: false,
+          },
+        },
+      },
+);
 
 const connectToDatabase = async () => {
   try {
