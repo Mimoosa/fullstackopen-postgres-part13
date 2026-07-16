@@ -1,4 +1,6 @@
 const router = require("express").Router();
+const jwt = require("jsonwebtoken");
+const { Op } = require("sequelize");
 
 const { Blog, User } = require("../models");
 
@@ -28,15 +30,24 @@ const tokenExtractor = (req, res, next) => {
 };
 
 router.get("/", async (req, res) => {
+  const where = {};
+  if (req.query.search) {
+    where[Op.or] = [
+      { title: { [Op.iLike]: `%${req.query.search}%` } },
+      { author: { [Op.iLike]: `%${req.query.search}%` } },
+    ];
+  }
   const blogs = await Blog.findAll({
     attributes: { exclude: ["userId"] },
     include: {
       model: User,
       attributes: ["name"],
     },
+    where,
+    order: [["likes", "DESC"]],
   });
   console.log(JSON.stringify(blogs, null, 2));
-  res.json(blogs);
+  res.status(200).json(blogs);
 });
 
 router.post("/", tokenExtractor, async (req, res) => {
@@ -50,8 +61,8 @@ router.post("/", tokenExtractor, async (req, res) => {
 });
 
 router.get("/:id", blogFinder, async (req, res) => {
-  console.log(blog.toJSON());
-  res.json(req.blog);
+  console.log(req.blog.toJSON());
+  res.status(200).json(req.blog);
 });
 
 router.put("/:id", blogFinder, async (req, res) => {
@@ -60,9 +71,11 @@ router.put("/:id", blogFinder, async (req, res) => {
   res.json(req.blog);
 });
 
-router.delete("/:id", blogFinder, async (req, res) => {
-  await req.blog.destroy();
-  res.status(204).end();
+router.delete("/:id", tokenExtractor, blogFinder, async (req, res) => {
+  if (req.blog.userId === req.decodedToken.id) {
+    await req.blog.destroy();
+    res.status(204).end();
+  }
 });
 
 module.exports = router;
