@@ -10,6 +10,11 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    env:
+      TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db?sslmode=disable
+      PORT: 3001
+      SECRET: test_secret
+
     services:
       postgres:
         image: postgres:17
