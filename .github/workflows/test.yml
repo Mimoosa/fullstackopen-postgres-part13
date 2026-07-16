@@ -52,7 +52,7 @@ jobs:
           node backend/index.js > app.log 2>&1 &
 
       - name: Wait for application to be ready
-        run: npx wait-on http://127.0.0.1:3001 -t 30000
+        run: npx wait-on tcp:3001 -t 30000
 
       - name: Run tests
         run: npm test
