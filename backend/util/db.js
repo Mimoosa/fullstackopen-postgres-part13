@@ -1,7 +1,7 @@
 const Sequelize = require("sequelize");
 const { DATABASE_URL, TEST_DATABASE_URL } = require("./config");
 
-const useTestDb = process.env.TESTING === "true";
+const useTestDb = String(process.env.TESTING).toLowerCase() === "true";
 
 const sequelize = new Sequelize(
   useTestDb ? TEST_DATABASE_URL : DATABASE_URL,
