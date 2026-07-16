@@ -36,8 +36,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install backend dependencies
+        run: npm ci --prefix backend
+
       - name: Start application
-        run: npm start > app.log 2>&1 &
+        run: node backend/index.js > app.log 2>&1 &
         env:
           TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db?sslmode=disable
           PORT: 3001
@@ -59,4 +62,4 @@ jobs:
 
       - name: Stop application
         if: always()
-        run: pkill -f "node index.js" || true
+        run: pkill -f "backend/index.js" || true
