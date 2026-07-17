@@ -1,7 +1,5 @@
 const Sequelize = require("sequelize");
 const { DATABASE_URL, TEST_DATABASE_URL } = require("./config");
-const { Umzug, SequelizeStorage } = require("umzug");
-const path = require("path");
 
 const useTestDb = String(process.env.TESTING).toLowerCase() === "true";
 
