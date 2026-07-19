@@ -15,6 +15,8 @@ const { User, Blog, Session, ReadingList } = require("./models");
 
 const { errorHandler } = require("./util/middleware");
 
+const { sequelize } = require("./util/db");
+
 app.use(express.json());
 
 app.use("/api/blogs", blogsRouter);
@@ -25,21 +27,12 @@ app.use("/api/readinglists", readingListRouter);
 app.use("/api/logout", logoutRouter);
 
 app.post("/api/reset", async (req, res) => {
-  await Blog.destroy({
-    where: {},
-  });
+  const qi = sequelize.getQueryInterface();
 
-  await User.destroy({
-    where: {},
-  });
-
-  await ReadingList.destroy({
-    where: {},
-  });
-
-  await Session.destroy({
-    where: {},
-  });
+  await qi.bulkDelete("blogs", {});
+  await qi.bulkDelete("users", {});
+  await qi.bulkDelete("reading_lists", {});
+  await qi.bulkDelete("sessions", {});
 
   res.status(204).end();
 });
