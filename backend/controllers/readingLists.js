@@ -29,11 +29,14 @@ router.post("/", async (request, response) => {
       blogId: Number(blogId),
       read: false,
     });
+
+    const saved = await ReadingList.findByPk(readingList.id);
+
     response.status(201).json({
-      id: Number(readingList.id),
-      userId: Number(readingList.userId),
-      blogId: Number(readingList.blogId),
-      read: readingList.read,
+      id: saved.id,
+      userId: saved.userId,
+      blogId: saved.blogId,
+      read: saved.read,
     });
   } catch (error) {
     return response.status(400).json({ error });
