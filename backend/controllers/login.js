@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const router = require("express").Router();
 
 const User = require("../models/user");
+const Session = require("../models/session");
 
 router.post("/", async (request, response) => {
   const { username, password } = request.body;
@@ -12,6 +13,13 @@ router.post("/", async (request, response) => {
       username: request.body.username,
     },
   });
+
+  if (user && user.disabled) {
+    return response.status(403).json({
+      error: "user is disabled.",
+    });
+  }
+
   console.log(password);
   console.log(user.passwordHash);
   const passwordCorrect =
@@ -29,6 +37,8 @@ router.post("/", async (request, response) => {
   };
 
   const token = jwt.sign(userForToken, process.env.SECRET);
+
+  await Session.create({ userId: user.id, token: token });
 
   response
     .status(200)

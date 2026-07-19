@@ -8,6 +8,7 @@ const tokenExtractor = (req, res, next) => {
         authorization.substring(7),
         process.env.SECRET,
       );
+      req.token = authorization.substring(7);
     } catch {
       return res.status(401).json({ error: "token invalid" });
     }

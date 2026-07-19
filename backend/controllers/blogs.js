@@ -2,7 +2,7 @@ const router = require("express").Router();
 const { Op } = require("sequelize");
 const { tokenExtractor } = require("../util/middleware");
 
-const { Blog, User } = require("../models");
+const { Blog, User, Session } = require("../models");
 
 const blogFinder = async (req, res, next) => {
   req.blog = await Blog.findByPk(req.params.id);
@@ -35,7 +35,19 @@ router.get("/", async (req, res) => {
 
 router.post("/", tokenExtractor, async (req, res) => {
   try {
-    const user = await User.findByPk(req.decodedToken.id);
+    const session = await Session.findOne({ where: { token: req.token } });
+    if (!session) {
+      return response.status(401).json({
+        error: "invalid token",
+      });
+    }
+    const user = await User.findOne({ where: { id: session.userId } });
+    if (user && user.disabled) {
+      return response.status(403).json({
+        error: "user is disabled.",
+      });
+    }
+
     const blog = await Blog.create({ ...req.body, userId: user.id });
     res.json(blog);
   } catch (error) {
@@ -55,6 +67,19 @@ router.put("/:id", blogFinder, async (req, res) => {
 });
 
 router.delete("/:id", tokenExtractor, blogFinder, async (req, res) => {
+  const session = await Session.findOne({ where: { token: req.token } });
+  if (!session) {
+    return response.status(401).json({
+      error: "invalid token",
+    });
+  }
+  const user = await User.findOne({ where: { id: session.userId } });
+  if (user && user.disabled) {
+    return response.status(403).json({
+      error: "user is disabled.",
+    });
+  }
+
   if (req.blog.userId === req.decodedToken.id) {
     await req.blog.destroy();
     res.status(204).end();

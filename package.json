@@ -15,7 +15,7 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "test": "cross-env TESTING=true node --test --test-concurrency=1 tests/api_ch3.test.js",
+    "test": "cross-env TESTING=true node --test --test-concurrency=1",
     "start:test": "cross-env TESTING=true node backend/index.js",
     "start": "node backend/index.js",
     "dev": "node --watch backend/index.js"
