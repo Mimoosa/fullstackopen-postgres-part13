@@ -37,13 +37,13 @@ router.post("/", tokenExtractor, async (req, res) => {
   try {
     const session = await Session.findOne({ where: { token: req.token } });
     if (!session) {
-      return response.status(401).json({
+      return res.status(401).json({
         error: "invalid token",
       });
     }
     const user = await User.findOne({ where: { id: session.userId } });
     if (user && user.disabled) {
-      return response.status(403).json({
+      return res.status(403).json({
         error: "user is disabled.",
       });
     }
@@ -69,21 +69,23 @@ router.put("/:id", blogFinder, async (req, res) => {
 router.delete("/:id", tokenExtractor, blogFinder, async (req, res) => {
   const session = await Session.findOne({ where: { token: req.token } });
   if (!session) {
-    return response.status(401).json({
+    return res.status(401).json({
       error: "invalid token",
     });
   }
   const user = await User.findOne({ where: { id: session.userId } });
   if (user && user.disabled) {
-    return response.status(403).json({
+    return res.status(403).json({
       error: "user is disabled.",
     });
   }
 
-  if (req.blog.userId === req.decodedToken.id) {
-    await req.blog.destroy();
-    res.status(204).end();
+  if (req.blog.userId !== session.userId) {
+    return res.status(403).json({ error: "forbidden" });
   }
+
+  await req.blog.destroy();
+  return res.status(204).end();
 });
 
 module.exports = router;
