@@ -30,9 +30,9 @@ router.post("/", async (request, response) => {
       read: false,
     });
     response.status(201).json({
-      id: readingList.id,
-      userId: readingList.userId,
-      blogId: readingList.blogId,
+      id: Number(readingList.id),
+      userId: Number(readingList.userId),
+      blogId: Number(readingList.blogId),
       read: readingList.read,
     });
   } catch (error) {
