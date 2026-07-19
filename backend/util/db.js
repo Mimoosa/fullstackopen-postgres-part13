@@ -14,6 +14,9 @@ const sequelize = new Sequelize(
             rejectUnauthorized: false,
           },
         },
+        define: {
+          schema: "public",
+        },
       },
 );
 

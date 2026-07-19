@@ -9,6 +9,9 @@ const usersRouter = require("./controllers/users");
 const loginRouter = require("./controllers/login");
 const authorRouter = require("./controllers/authors");
 const { User, Blog } = require("./models");
+const { sequelize } = require("./util/db");
+
+const { errorHandler } = require("./util/middleware");
 
 app.use(express.json());
 
@@ -28,26 +31,6 @@ app.post("/api/reset", async (req, res) => {
 
   res.status(204).end();
 });
-
-const errorHandler = (error, request, response, next) => {
-  console.error(error.message);
-
-  console.error(error.message);
-
-  if (error.name === "SequelizeValidationError") {
-    return response
-      .status(400)
-      .json({ error: error.errors.map((e) => e.message) });
-  }
-
-  if (error.name === "SequelizeUniqueConstraintError") {
-    return response
-      .status(400)
-      .json({ error: error.errors.map((e) => e.message) });
-  }
-
-  next(error);
-};
 
 app.use(errorHandler);
 
