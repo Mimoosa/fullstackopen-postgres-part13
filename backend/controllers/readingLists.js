@@ -20,17 +20,20 @@ router.post("/", async (request, response) => {
   });
 
   if (!(user && blog)) {
-    return response.status(401).json({
+    return response.status(404).json({
       error: "invalid user-id or blog-id",
     });
   }
 
   try {
-    const readingList = await ReadingList.create({
-      userId: userId,
-      blogId: blogId,
-    });
-    response.status(200).json(readingList);
+    const readingList = await ReadingList.create(
+      {
+        userId: userId,
+        blogId: blogId,
+      },
+      { raw: true },
+    );
+    response.status(201).json(readingList);
   } catch (error) {
     return response.status(400).json({ error });
   }
@@ -39,6 +42,9 @@ router.post("/", async (request, response) => {
 router.put("/:id", async (req, res) => {
   try {
     const readingList = await ReadingList.findByPk(req.params.id);
+    if (!readingList) {
+      return res.status(404).json({ error: "reading list entry not found" });
+    }
     readingList.read = req.body.read;
     await readingList.save();
     res.json(readingList);
