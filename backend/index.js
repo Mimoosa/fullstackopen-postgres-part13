@@ -48,6 +48,13 @@ app.use(errorHandler);
 
 const start = async () => {
   await connectToDatabase();
+
+  if (process.env.TESTING === "true") {
+    const { sequelize } = require("./util/db");
+    await sequelize.sync({ force: true });
+    console.log("Test DB synced (tables created)");
+  }
+
   app.listen(PORT, "127.0.0.1", () => {
     console.log(`Server running on port ${PORT}`);
   });
