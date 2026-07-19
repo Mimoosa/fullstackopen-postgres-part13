@@ -32,7 +32,7 @@ router.post("/", async (request, response) => {
     });
     response.status(200).json(readingList);
   } catch (error) {
-    return res.status(400).json({ error });
+    return response.status(400).json({ error });
   }
 });
 
