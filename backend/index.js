@@ -27,12 +27,10 @@ app.use("/api/readinglists", readingListRouter);
 app.use("/api/logout", logoutRouter);
 
 app.post("/api/reset", async (req, res) => {
-  const qi = sequelize.getQueryInterface();
-
-  await qi.bulkDelete("blogs", {});
-  await qi.bulkDelete("users", {});
-  await qi.bulkDelete("reading_lists", {});
-  await qi.bulkDelete("sessions", {});
+  await ReadingList.destroy({ where: {}, truncate: true });
+  await Session.destroy({ where: {}, truncate: true });
+  await Blog.destroy({ where: {}, truncate: true });
+  await User.destroy({ where: {}, truncate: true });
 
   res.status(204).end();
 });
