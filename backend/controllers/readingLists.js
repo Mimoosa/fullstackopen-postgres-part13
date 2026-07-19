@@ -34,8 +34,8 @@ router.post("/", async (request, response) => {
 
     response.status(201).json({
       id: saved.id,
-      userId: saved.userId,
-      blogId: saved.blogId,
+      user_id: saved.userId,
+      blog_id: saved.blogId,
       read: saved.read,
     });
   } catch (error) {
@@ -62,7 +62,7 @@ router.put("/:id", tokenExtractor, async (req, res) => {
   }
 
   if (readingList.userId !== session.userId) {
-    return res.status(403).json({ error: "forbidden" });
+    return res.status(401).json({ error: "unauthorized" });
   }
 
   readingList.read = req.body.read;
@@ -72,8 +72,8 @@ router.put("/:id", tokenExtractor, async (req, res) => {
 
   return res.json({
     id: readingList.id,
-    userId: readingList.userId,
-    blogId: readingList.blogId,
+    user_id: readingList.userId,
+    blog_id: readingList.blogId,
     read: readingList.read,
     blog: {
       id: blog.id,
